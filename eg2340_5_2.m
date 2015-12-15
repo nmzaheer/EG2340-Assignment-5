@@ -105,22 +105,18 @@ for i=1:24
             bat_val(i) = bat_soc + excess;
             bat_en_flow(i) = excess; 
         end
-    elseif (load(i) > (bat_av + wind(i)) && load(i) <= (bat_av + wind(i) + diesel_min))
-            excess = diesel_min + wind(i) - load(i);
-            diesel_en_flow(i) = diesel_min;
-            if((bat_soc+excess) > bat_max)
-                bat_val(i) = bat_max;
-                bat_en_flow(i) = bat_max - bat_soc;
-                dump_en_flow(i) = excess - (bat_max - bat_soc);
+    elseif (load(i) > (bat_av + wind(i)))
+            excess = load(i) - wind(i);
+            bat_buf = bat_max - bat_soc;
+            if((excess + bat_buf) > diesel_inst)
+                diesel_en_flow(i) = diesel_inst;
+                bat_en_flow(i) = diesel_inst - excess;
+                bat_val(i) = bat_soc + bat_en_flow(i);
             else
-                bat_val(i) = bat_soc + excess;
-                bat_en_flow(i) = excess; 
+                diesel_en_flow(i) = excess + bat_buf;
+                bat_val(i) = bat_max;
+                bat_en_flow(i) = bat_buf;
             end
-    elseif(load(i)> (bat_av + wind(i) + diesel_min))
-            excess = load(i) - (diesel_min + wind(i) + bat_av) ;
-            bat_en_flow(i) = 0-bat_av;
-            bat_val(i) = bat_min;
-            diesel_en_flow(i) = diesel_min + excess;
     else
         disp('Something wrong');
     end
