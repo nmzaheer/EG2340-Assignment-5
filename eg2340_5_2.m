@@ -10,8 +10,7 @@ dump_inst = 100;
 bat_inst = 100;
 
 diesel_en_flow = zeros(1,24);
-bat_en_flow = zeros(1,24);
-dump_en_flow = zeros(1,24);
+
 for i=1:24
     diesel_en_flow(i) = load(i)*1;
 end
@@ -19,7 +18,7 @@ end
 for i=1:24
     fprintf('Hour %d\t%.2f\n',i,diesel_en_flow(i));
 end
-
+fprintf('\nFuel used is %.2f\n', sum(diesel_en_flow.*0.25)+3*24+1);
 diesel_must_run=1;
 diesel_min = 30;
 bat_min = 20;
@@ -72,10 +71,7 @@ for i=1:24
     fprintf('%.2f\t%.2f\t\t%.2f\t\t%.2f\t\t\t%.2f\t\t\t%.2f\n',load(i),wind(i),diesel_en_flow(i),bat_en_flow(i),bat_val(i),dump_en_flow(i));
 end
 
-for i=1:24
-        residual(i) = diesel_en_flow(i)+wind(i)-bat_en_flow(i)-load(i)-dump_en_flow(i);
-end
-
+fprintf('\nFuel used is %.2f\n', sum(diesel_en_flow.*0.25)+3*nnz(diesel_en_flow)+1);
 
 diesel_min = 30;
 bat_min = 20;
@@ -122,13 +118,4 @@ for i=1:24
     end
     fprintf('%.2f\t%.2f\t\t%.2f\t\t%.2f\t\t\t%.2f\t\t\t%.2f\n',load(i),wind(i),diesel_en_flow(i),bat_en_flow(i),bat_val(i),dump_en_flow(i));
 end
-
-
-% for i=1:24
-%     fprintf('%.2f\t%.2f\t\t%.2f\t\t%.2f\t\t\t%.2f\t\t\t%.2f\n',load(i),wind(i),diesel_en_flow(i),bat_en_flow(i),bat_val(i),dump_en_flow(i));
-% end
-% 
-for i=1:24
-        residual(i) = diesel_en_flow(i)+wind(i)-bat_en_flow(i)-load(i)-dump_en_flow(i);
-end
-
+fprintf('\nFuel used is %.2f\n', sum(diesel_en_flow.*0.25)+3*nnz(diesel_en_flow)+1);
