@@ -1,4 +1,4 @@
-clc;
+%Program Code for Task 4-6
 clear all;
 load = [22 22 18 15 18 20 29 41 46 72 75 92 81 94 90 97 80 74 60 67 75 66 29 28];
 wind = [31 32 43 48 47 36 6 8 12 18 26 39 45 45 50 46 41 44 41 50 49 31 31 50];
@@ -16,7 +16,7 @@ for i=1:24
 end
 
 for i=1:24
-    fprintf('Hour %d\t%.2f\n',i,diesel_en_flow(i));
+    fprintf('%d\t%.2f\n',i,diesel_en_flow(i));
 end
 fprintf('\nFuel used is %.2f\n', sum(diesel_en_flow.*0.25)+3*24+1);
 diesel_must_run=1;
@@ -30,6 +30,7 @@ diesel_en_flow = zeros(1,24);
 bat_en_flow = zeros(1,24);
 dump_en_flow = zeros(1,24);
 
+fprintf('\nHour\tDiesel Flow\tWind\tBattery Flow\n');
 for i=1:24
     if(i==1)
         bat_soc = bat_initial;
@@ -64,13 +65,9 @@ for i=1:24
     else
         disp('Something wrong');
     end
+    fprintf('%d\t\t\t%.2f\t%.2f\t\t%.2f\n',i,diesel_en_flow(i),wind(i),bat_en_flow(i));
 end
-
-fprintf('\nLoad\tWind\tDiesel Flow\tBattery Flow\tBattery Value\tDump Load\n');
-for i=1:24
-    fprintf('%.2f\t%.2f\t\t%.2f\t\t%.2f\t\t\t%.2f\t\t\t%.2f\n',load(i),wind(i),diesel_en_flow(i),bat_en_flow(i),bat_val(i),dump_en_flow(i));
-end
-
+    
 fprintf('\nFuel used is %.2f\n', sum(diesel_en_flow.*0.25)+3*nnz(diesel_en_flow)+1);
 
 diesel_min = 30;
@@ -83,7 +80,7 @@ diesel_en_flow = zeros(1,24);
 bat_en_flow = zeros(1,24);
 dump_en_flow = zeros(1,24);
 
-fprintf('\nLoad\tWind\tDiesel Flow\tBattery Flow\tBattery Value\tDump Load\n');
+fprintf('\nHour\tDiesel Flow\tWind\tBattery Flow\n');
 for i=1:24
     if(i==1)
         bat_soc = bat_initial;
@@ -102,20 +99,20 @@ for i=1:24
             bat_en_flow(i) = excess; 
         end
     elseif (load(i) > (bat_av + wind(i)))
-            excess = load(i) - wind(i);
-            bat_buf = bat_max - bat_soc;
-            if((excess + bat_buf) > diesel_inst)
-                diesel_en_flow(i) = diesel_inst;
-                bat_en_flow(i) = diesel_inst - excess;
-                bat_val(i) = bat_soc + bat_en_flow(i);
+            excess = load(i) - wind(i) - bat_av;
+            if(excess <= diesel_min)
+                diesel_en_flow(i) = diesel_min;
+                bat_val(i) = bat_min + diesel_min - excess;
+                bat_en_flow(i) = diesel_min - excess - bat_av;
             else
-                diesel_en_flow(i) = excess + bat_buf;
-                bat_val(i) = bat_max;
-                bat_en_flow(i) = bat_buf;
+                diesel_en_flow(i) = excess;
+                bat_en_flow(i) = bat_av;
+                bat_val(i) = bat_min;
             end
     else
         disp('Something wrong');
     end
-    fprintf('%.2f\t%.2f\t\t%.2f\t\t%.2f\t\t\t%.2f\t\t\t%.2f\n',load(i),wind(i),diesel_en_flow(i),bat_en_flow(i),bat_val(i),dump_en_flow(i));
+    fprintf('%d\t\t\t%.2f\t%.2f\t\t%.2f\n',i,diesel_en_flow(i),wind(i),bat_en_flow(i));
 end
+
 fprintf('\nFuel used is %.2f\n', sum(diesel_en_flow.*0.25)+3*nnz(diesel_en_flow)+1);
